@@ -1,296 +1,379 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>App Trắc Nghiệm Luật Viên Chức</title>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Quiz - Luật Viên Chức</title>
 <style>
-body {
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  max-width: 900px;
-  margin: 40px auto;
-  padding: 20px 30px 40px 30px;
-  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-  color: #333;
-}
+  /* UI đẹp, gọn và dễ đọc */
+  body{
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    max-width: 980px; margin: 36px auto;
+    padding: 20px 28px 48px; background: linear-gradient(135deg,#f5f7fa 0%,#e2ecf8 100%);
+    color:#222;
+  }
+  h1{ text-align:center; color:#17214a; margin-bottom:14px; font-size:2rem;}
+  #controls{ display:flex; gap:10px; align-items:center; justify-content:center; flex-wrap:wrap; margin-bottom:18px; }
+  #num-questions{ width:84px; padding:8px; border-radius:8px; border:1.6px solid #c7d0e8; }
+  .btn{ padding:10px 18px; border-radius:10px; border:none; background:#2f3fb2; color:#fff; cursor:pointer; font-weight:600; box-shadow:0 6px 18px rgba(47,63,178,0.12); }
+  .btn:disabled{ background:#9fa8da; cursor:not-allowed; box-shadow:none; }
+  .small-muted{ font-size:0.9rem; color:#5b6473; }
+  #toggle-live-grade{ cursor:pointer; padding:6px 12px; border-radius:12px; font-weight:700; background:#e0e0e0; color:#222; border:none; }
+  #toggle-live-grade.active{ background:#2f3fb2; color:#fff; box-shadow:0 6px 18px rgba(47,63,178,0.24); }
 
-h1 {
-  text-align: center;
-  font-weight: 700;
-  font-size: 2.8rem;
-  color: #1a237e;
-  margin-bottom: 40px;
-  text-shadow: 0 2px 5px rgba(26, 35, 126, 0.3);
-  user-select: none;
-}
-
-#controls {
-  text-align: center;
-  margin-bottom: 25px;
-}
-
-#num-questions {
-  width: 70px;
-  font-size: 1.1rem;
-  padding: 7px 12px;
-  border-radius: 8px;
-  border: 1.8px solid #b0bec5;
-  transition: border-color 0.3s ease;
-}
-
-#num-questions:focus {
-  outline: none;
-  border-color: #3949ab;
-  box-shadow: 0 0 8px rgba(57, 73, 171, 0.5);
-}
-
-.btn {
-  padding: 12px 24px;
-  font-size: 1.1rem;
-  font-weight: 600;
-  cursor: pointer;
-  margin: 0 8px 12px 8px;
-  border-radius: 12px;
-  border: none;
-  color: white;
-  background: #3949ab;
-  box-shadow: 0 4px 15px rgba(57, 73, 171, 0.4);
-  transition: background-color 0.25s ease, box-shadow 0.25s ease;
-  user-select: none;
-}
-
-.btn:hover:not(:disabled) {
-  background: #283593;
-  box-shadow: 0 6px 20px rgba(40, 53, 147, 0.6);
-}
-
-.btn:disabled {
-  background: #9fa8da;
-  cursor: not-allowed;
-  box-shadow: none;
-}
-
-#quiz-form {
-  user-select: none;
-}
-
-.question {
-  margin-bottom: 25px;
-  padding: 22px 26px;
-  background: white;
-  border-radius: 18px;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
-  border: 3px solid transparent;
-  transition: background-color 0.35s ease, border-color 0.35s ease;
-}
-
-.question p {
-  font-size: 1.2rem;
-  font-weight: 600;
-  margin-bottom: 16px;
-  color: #22254b;
-  user-select: text;
-}
-
-.options label {
-  display: block;
-  margin-bottom: 12px;
-  cursor: pointer;
-  font-size: 1.05rem;
-  padding: 10px 18px;
-  border-radius: 12px;
-  border: 2px solid transparent;
-  transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
-  user-select: text;
-  color: #3e424e;
-}
-
-.options label:hover {
-  background-color: #e8eaf6;
-  border-color: #3949ab;
-  color: #1a237e;
-}
-
-.options input[type="radio"] {
-  margin-right: 14px;
-  transform: scale(1.3);
-  cursor: pointer;
-  vertical-align: middle;
-}
-
-.result-icon {
-  font-weight: 900;
-  margin-left: 14px;
-  font-size: 1.5rem;
-  vertical-align: middle;
-  user-select: none;
-}
-
-#result {
-  margin-top: 35px;
-  font-size: 1.5rem;
-  font-weight: 700;
-  text-align: center;
-  color: #1a237e;
-  text-shadow: 1px 1px 2px rgba(57, 73, 171, 0.3);
-  user-select: none;
-}
-
+  #quiz-form{ margin-top:12px; user-select:none; }
+  .question{ margin-bottom:18px; padding:16px 18px; background:#fff; border-radius:12px; box-shadow:0 8px 22px rgba(17,24,39,0.06); border:3px solid transparent; transition:all .25s ease; }
+  .question p{ margin:0 0 10px 0; font-weight:700; color:#1f2650; }
+  .options label{ display:block; padding:10px 12px; border-radius:10px; margin-bottom:8px; cursor:pointer; transition:all .15s ease; }
+  .options label:hover{ background:#eef2ff; border:1px solid #3d47b5; color:#1b2566; }
+  .options input[type="radio"]{ transform:scale(1.12); margin-right:10px; }
+  .result-icon{ font-weight:900; margin-left:10px; font-size:1.15rem; }
+  .correct-answer{ margin-top:8px; font-size:0.95rem; color:#0b5132; background:#dff0ea; padding:8px 12px; border-radius:8px; }
+  .error-note{ margin-top:8px; font-size:0.95rem; color:#856404; background:#fff3cd; padding:8px 12px; border-radius:8px; }
+  #result{ margin-top:18px; font-size:1.1rem; font-weight:700; text-align:center; color:#17214a; }
+  #errors{ margin-top:14px; color:#5a3b00; }
+  ul.error-list{ margin:8px 0 0 18px; color:#5a3b00;}
 </style>
 </head>
 <body>
+  <h1>Trắc nghiệm - Luật Viên Chức</h1>
 
-<h1>Trắc Nghiệm Luật Viên Chức</h1>
+  <div id="controls">
+    <button id="load-btn" class="btn">Tải câu hỏi</button>
 
-<div id="controls">
-  <button id="load-btn" class="btn">Tải câu hỏi</button>
-  <label for="num-questions">Số câu random:</label>
-  <input type="number" id="num-questions" min="1" max="1000" value="60" />
-  <button id="random-btn" class="btn" disabled>Random lại</button>
-  <button id="submit-btn" class="btn" disabled>Nộp bài</button>
-</div>
+    <label class="small-muted">Số câu random:</label>
+    <input id="num-questions" type="number" value="60" min="1" max="5000" />
 
-<form id="quiz-form"></form>
-<div id="result"></div>
+    <button id="random-btn" class="btn" disabled>Random lại</button>
+    <button id="submit-btn" class="btn" disabled>Nộp bài</button>
+
+    <button id="toggle-live-grade" title="Bật/tắt chấm ngay khi tick">Chấm khi tick: TẮT</button>
+  </div>
+
+  <form id="quiz-form"></form>
+
+  <div id="result"></div>
+  <div id="errors"></div>
 
 <script>
+/* ===== Data & state ===== */
 let allQuestions = [];
 let currentQuestions = [];
+let errorSet = new Set(); // chỉ lưu index những câu lỗi cấu trúc
+let liveGrade = false;    // mặc định tắt
 
-// Hàm lấy n câu random từ mảng
-function getRandomQuestions(arr, n) {
-  const shuffled = arr.slice().sort(() => 0.5 - Math.random());
-  return shuffled.slice(0, n);
-}
-
-// Tìm đáp án đúng (có **...**)
-function findCorrectOption(question) {
-  for (const [key, val] of Object.entries(question.options)) {
-    if (val.includes('**')) return key;
+/* ===== Helpers ===== */
+function shuffleArray(arr){
+  const a = arr.slice();
+  for(let i=a.length-1;i>0;i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [a[i],a[j]]=[a[j],a[i]];
   }
-  return null;
+  return a;
 }
 
-// Hiển thị quiz
-function renderQuiz(questions) {
+/* Tìm và clean đáp án đúng (trong **...**), lưu key vào q._correctKey */
+function cleanCorrectAnswers(questions){
+  questions.forEach(q=>{
+    q._correctKey = null;
+    if(!q.options || typeof q.options !== 'object') return;
+    for(const [key,val] of Object.entries(q.options)){
+      if(typeof val !== 'string') continue;
+      const m = val.match(/\*\*(.+?)\*\*/);
+      if(m){
+        q.options[key] = m[1].trim();
+        q._correctKey = key;
+      } else {
+        // xoá tiền tố như "(A) A." nếu có để hiển thị gọn
+        q.options[key] = q.options[key].replace(/^\(?[A-E]\)?\s*[A-E]\.\s*/, '').trim();
+      }
+    }
+  });
+}
+
+/* Random n câu */
+function getRandomQuestions(arr, n){
+  const sample = shuffleArray(arr);
+  return sample.slice(0, Math.min(n, sample.length));
+}
+
+/* Render quiz */
+function renderQuiz(questions){
+  errorSet.clear();
   const form = document.getElementById('quiz-form');
   form.innerHTML = '';
-  questions.forEach((q, idx) => {
-    const qDiv = document.createElement('div');
-    qDiv.className = 'question';
-    qDiv.innerHTML = `<p><strong>Câu ${idx+1}:</strong> ${q.question_text}</p>`;
-    const optionsDiv = document.createElement('div');
-    optionsDiv.className = 'options';
+  questions.forEach((q, idx)=>{
+    const div = document.createElement('div');
+    div.className = 'question';
+    div.dataset.idx = idx;
+    const qText = q.question_text || '(Không có nội dung câu hỏi)';
+    div.innerHTML = `<p><strong>Câu ${idx+1}:</strong> ${qText}</p>`;
+    const options = document.createElement('div');
+    options.className = 'options';
 
-    for (const [key, val] of Object.entries(q.options)) {
-      const cleanVal = val.replace(/\*\*/g, '').trim();
-      const inputId = `q${idx}_${key}`;
-      const label = document.createElement('label');
-      label.htmlFor = inputId;
-      label.innerHTML = `<input type="radio" name="q${idx}" id="${inputId}" value="${key}"> (${key}) ${cleanVal}`;
-      optionsDiv.appendChild(label);
+    if(!q.options || Object.keys(q.options).length===0){
+      const note = document.createElement('div');
+      note.className = 'error-note';
+      note.textContent = 'Lỗi: câu hỏi không có lựa chọn (bỏ qua).';
+      div.appendChild(note);
+      form.appendChild(div);
+      errorSet.add(idx);
+      return;
     }
 
-    qDiv.appendChild(optionsDiv);
-    form.appendChild(qDiv);
+    for(const [k,v] of Object.entries(q.options)){
+      const id = `q${idx}_${k}`;
+      const label = document.createElement('label');
+      label.htmlFor = id;
+      label.innerHTML = `<input type="radio" name="q${idx}" id="${id}" value="${k}"> (${k}) ${v}`;
+      options.appendChild(label);
+    }
+    div.appendChild(options);
+    form.appendChild(div);
   });
+
+  document.getElementById('result').textContent = '';
+  document.getElementById('errors').innerHTML = '';
 }
 
-// Chấm điểm và highlight đúng sai
-function gradeQuiz(questions) {
+/* Grade single question (used by live and by submit all) */
+/* showAnswerIfUnanswered param: if true => reveal correct answer even when not selected (for submit) */
+function gradeOneQuestion(idx, showAnswerIfUnanswered=false){
+  const form = document.getElementById('quiz-form');
+  const q = currentQuestions[idx];
+  const qDiv = form.children[idx];
+  if(!q || !qDiv) return;
+
+  // reset visuals
+  qDiv.style.backgroundColor = 'white';
+  qDiv.style.borderColor = 'transparent';
+  const oldIcon = qDiv.querySelector('.result-icon'); if(oldIcon) oldIcon.remove();
+  const oldAns = qDiv.querySelector('.correct-answer'); if(oldAns) oldAns.remove();
+  const oldErr = qDiv.querySelector('.error-note'); if(oldErr) oldErr.remove();
+
+  // if no correct key -> mark error and skip
+  if(!q._correctKey){
+    const note = document.createElement('div');
+    note.className = 'error-note';
+    note.textContent = 'Lỗi: không có đáp án đúng (bỏ qua câu này).';
+    qDiv.appendChild(note);
+    qDiv.style.backgroundColor = '#fff8e1';
+    qDiv.style.borderColor = '#d3a50b';
+    errorSet.add(idx);
+    return;
+  }
+
+  const selected = form.querySelector(`input[name=q${idx}]:checked`);
+  if(!selected){
+    if(showAnswerIfUnanswered){
+      // reveal correct answer (unanswered)
+      qDiv.style.backgroundColor = '#fff0f1';
+      qDiv.style.borderColor = '#d64545';
+      const ans = document.createElement('div');
+      ans.className = 'correct-answer';
+      const correctText = q.options[q._correctKey] || '(Không có nội dung đáp án)';
+      ans.textContent = `Đáp án đúng: (${q._correctKey}) ${correctText}`;
+      qDiv.appendChild(ans);
+    }
+    // else do nothing (leave as not answered)
+    return;
+  }
+
+  // if selected
+  if(selected.value === q._correctKey){
+    qDiv.style.backgroundColor = '#e6fbef';
+    qDiv.style.borderColor = '#2f9e59';
+    const icon = document.createElement('span');
+    icon.className = 'result-icon';
+    icon.style.color = '#2f9e59';
+    icon.textContent = '✔';
+    qDiv.querySelector('p').appendChild(icon);
+  } else {
+    qDiv.style.backgroundColor = '#fff0f1';
+    qDiv.style.borderColor = '#d64545';
+    const icon = document.createElement('span');
+    icon.className = 'result-icon';
+    icon.style.color = '#d64545';
+    icon.textContent = '✘';
+    qDiv.querySelector('p').appendChild(icon);
+
+    const ans = document.createElement('div');
+    ans.className = 'correct-answer';
+    const correctText = q.options[q._correctKey] || '(Không có nội dung đáp án)';
+    ans.textContent = `Đáp án đúng: (${q._correctKey}) ${correctText}`;
+    qDiv.appendChild(ans);
+  }
+}
+
+/* Submit: grade all questions and reveal answers for unanswered too */
+function submitAllAndReveal(){
+  errorSet.clear();
   let score = 0;
   const form = document.getElementById('quiz-form');
-  questions.forEach((q, idx) => {
-    const correctKey = findCorrectOption(q);
-    const selected = form.querySelector(`input[name=q${idx}]:checked`);
-    const qDiv = form.children[idx];
-    
-    // Reset trạng thái trước khi highlight, đồng thời xóa đáp án đúng nếu có
-    qDiv.style.backgroundColor = 'white';
-    qDiv.style.borderColor = 'transparent';
-    const oldIcon = qDiv.querySelector('.result-icon');
-    if (oldIcon) oldIcon.remove();
-    const oldAnswer = qDiv.querySelector('.correct-answer');
-    if (oldAnswer) oldAnswer.remove();
-
-    if (selected && selected.value === correctKey) {
-      score++;
-      qDiv.style.backgroundColor = '#d4edda'; // xanh nhạt
-      qDiv.style.borderColor = '#28a745';
-      const icon = document.createElement('span');
-      icon.className = 'result-icon';
-      icon.style.color = '#28a745';
-      icon.textContent = '✔';
-      qDiv.querySelector('p').appendChild(icon);
-    } else {
-      qDiv.style.backgroundColor = '#f8d7da'; // đỏ nhạt
-      qDiv.style.borderColor = '#dc3545';
-      const icon = document.createElement('span');
-      icon.className = 'result-icon';
-      icon.style.color = '#dc3545';
-      icon.textContent = '✘';
-      qDiv.querySelector('p').appendChild(icon);
-
-      // Thêm dòng đáp án đúng
-      const answerDiv = document.createElement('div');
-      answerDiv.className = 'correct-answer';
-      answerDiv.style.marginTop = '8px';
-      answerDiv.style.fontSize = '0.95rem';
-      answerDiv.style.color = '#155724';
-      answerDiv.style.backgroundColor = '#d1ecf1';
-      answerDiv.style.padding = '6px 12px';
-      answerDiv.style.borderRadius = '8px';
-      answerDiv.textContent = `Đáp án đúng: (${correctKey}) ${q.options[correctKey].replace(/\*\*/g, '').trim()}`;
-      qDiv.appendChild(answerDiv);
+  for(let i=0;i<currentQuestions.length;i++){
+    try{
+      const q = currentQuestions[i];
+      if(!q){
+        errorSet.add(i);
+        continue;
+      }
+      // grade with revealing unanswered
+      gradeOneQuestion(i, true);
+      // count score only when selected and correct
+      if(q._correctKey){
+        const sel = form.querySelector(`input[name=q${i}]:checked`);
+        if(sel && sel.value === q._correctKey) score++;
+      } else {
+        errorSet.add(i);
+      }
+    }catch(err){
+      errorSet.add(i);
+      const div = form.children[i];
+      if(div){
+        const note = document.createElement('div');
+        note.className = 'error-note';
+        note.textContent = 'Lỗi khi chấm câu này: ' + (err.message||'Unknown');
+        div.appendChild(note);
+      }
+      console.error('Error grading question', i, err);
     }
+  }
+  // display score and errors
+  const total = currentQuestions.length;
+  document.getElementById('result').textContent = `Bạn làm đúng ${score} trên ${total} câu. Điểm: ${(total>0)?((score/total*10).toFixed(2) + ' / 10') : '0 / 10'}`;
+  renderErrors();
+  // scroll to bottom
+  window.scrollTo(0, document.body.scrollHeight);
+}
+
+/* render errors list */
+function renderErrors(){
+  const errorsDiv = document.getElementById('errors');
+  if(errorSet.size===0){ errorsDiv.innerHTML = ''; return; }
+  const html = [];
+  html.push(`<strong>Các câu bị lỗi / bỏ qua (${errorSet.size}):</strong>`);
+  html.push('<ul class="error-list">');
+  [...errorSet].forEach(idx=>{
+    const q = currentQuestions[idx];
+    const text = q && q.question_text ? q.question_text.slice(0,140) : '(Không có nội dung)';
+    html.push(`<li>Câu ${idx+1}: ${escapeHtml(text)} — Lý do: thiếu đáp án đúng hoặc lỗi dữ liệu.</li>`);
   });
-  return score;
+  html.push('</ul>');
+  errorsDiv.innerHTML = html.join('');
 }
 
+/* simple escape for displayed snippet */
+function escapeHtml(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 
-function showResult(score, total) {
-  const resultDiv = document.getElementById('result');
-  resultDiv.textContent = `Bạn làm đúng ${score} trên ${total} câu hỏi. Điểm: ${(score/total*10).toFixed(2)} / 10`;
-}
-
-// Load file JSON từ path cố định
-document.getElementById('load-btn').addEventListener('click', () => {
+/* ===== Handlers ===== */
+document.getElementById('load-btn').addEventListener('click', ()=>{
   fetch('questions.json')
-    .then(resp => {
-      if (!resp.ok) throw new Error('Không thể tải file questions.json');
+    .then(resp=>{
+      if(!resp.ok) throw new Error('Không thể tải questions.json (kiểm tra path).');
       return resp.json();
     })
-    .then(data => {
-      if (!Array.isArray(data)) throw new Error('File JSON phải là mảng câu hỏi');
+    .then(data=>{
+      if(!Array.isArray(data)) throw new Error('File JSON phải là mảng câu hỏi.');
       allQuestions = data;
+      cleanCorrectAnswers(allQuestions);
       const n = parseInt(document.getElementById('num-questions').value) || 60;
-      currentQuestions = getRandomQuestions(allQuestions, Math.min(n, allQuestions.length));
+      currentQuestions = getRandomQuestions(allQuestions, n);
       renderQuiz(currentQuestions);
-      document.getElementById('submit-btn').disabled = false;
       document.getElementById('random-btn').disabled = false;
+      document.getElementById('submit-btn').disabled = false;
       document.getElementById('result').textContent = '';
+      document.getElementById('errors').innerHTML = '';
+      // reset live grade off
+      liveGrade = false; updateToggleButton();
+      console.log('Loaded', allQuestions.length, 'questions; using', currentQuestions.length);
     })
-    .catch(err => alert('Lỗi: ' + err.message));
+    .catch(err=>{
+      alert('Lỗi khi load JSON: ' + err.message);
+      console.error(err);
+    });
 });
 
-// Random lại với số câu theo input
-document.getElementById('random-btn').addEventListener('click', () => {
-  if (allQuestions.length === 0) return alert('Chưa tải câu hỏi nào!');
-  const n = parseInt(document.getElementById('num-questions').value);
-  if (isNaN(n) || n < 1) return alert('Vui lòng nhập số câu hợp lệ (tối thiểu 1).');
-  currentQuestions = getRandomQuestions(allQuestions, Math.min(n, allQuestions.length));
+document.getElementById('random-btn').addEventListener('click', ()=>{
+  if(allQuestions.length===0) return alert('Chưa tải câu hỏi.');
+  const n = parseInt(document.getElementById('num-questions').value) || 60;
+  currentQuestions = getRandomQuestions(allQuestions, n);
   renderQuiz(currentQuestions);
   document.getElementById('result').textContent = '';
+  document.getElementById('errors').innerHTML = '';
+  liveGrade = false; updateToggleButton();
+  console.log('Random lại, sử dụng', currentQuestions.length, 'câu');
 });
 
-// Nộp bài
-document.getElementById('submit-btn').addEventListener('click', () => {
-  if (currentQuestions.length === 0) return alert('Chưa có câu hỏi để chấm!');
-  const score = gradeQuiz(currentQuestions);
-  showResult(score, currentQuestions.length);
-  window.scrollTo(0, document.body.scrollHeight);
+document.getElementById('submit-btn').addEventListener('click', ()=>{
+  if(currentQuestions.length===0) return alert('Chưa có câu hỏi để chấm.');
+  submitAllAndReveal();
+});
+
+/* toggle live grade button */
+const toggleBtn = document.getElementById('toggle-live-grade');
+toggleBtn.addEventListener('click', ()=>{
+  liveGrade = !liveGrade;
+  updateToggleButton();
+  // if turning off live grade, clear per-question highlights but keep selections
+  if(!liveGrade){
+    const form = document.getElementById('quiz-form');
+    for(let i=0;i<currentQuestions.length;i++){
+      const div = form.children[i];
+      if(div){
+        div.style.backgroundColor = 'white';
+        div.style.borderColor = 'transparent';
+        const oldIcon = div.querySelector('.result-icon'); if(oldIcon) oldIcon.remove();
+        const oldAns = div.querySelector('.correct-answer'); if(oldAns) oldAns.remove();
+        const oldErr = div.querySelector('.error-note'); if(oldErr) oldErr.remove();
+      }
+    }
+    document.getElementById('result').textContent = '';
+    document.getElementById('errors').innerHTML = '';
+  } else {
+    // if enabling, grade already selected answers immediately
+    const form = document.getElementById('quiz-form');
+    let s = 0;
+    for(let i=0;i<currentQuestions.length;i++){
+      const sel = form.querySelector(`input[name=q${i}]:checked`);
+      if(sel){
+        gradeOneQuestion(i, false);
+        if(currentQuestions[i]._correctKey && sel.value === currentQuestions[i]._correctKey) s++;
+      }
+    }
+    document.getElementById('result').textContent = `Bạn làm đúng ${s} trên ${currentQuestions.length} câu.`;
+  }
+});
+function updateToggleButton(){
+  if(liveGrade){
+    toggleBtn.classList.add('active');
+    toggleBtn.textContent = 'Chấm khi tick: BẬT';
+  } else {
+    toggleBtn.classList.remove('active');
+    toggleBtn.textContent = 'Chấm khi tick: TẮT';
+  }
+}
+
+/* live grading when tick and liveGrade is ON */
+document.getElementById('quiz-form').addEventListener('change', (e)=>{
+  if(!e.target || !e.target.matches('input[type=radio]')) return;
+  if(!liveGrade) return;
+  const name = e.target.name; // e.g. q0
+  if(!name || name[0]!=='q') return;
+  const idx = parseInt(name.substring(1));
+  if(Number.isNaN(idx)) return;
+  gradeOneQuestion(idx, false);
+  // update score realtime
+  const form = document.getElementById('quiz-form');
+  let s = 0;
+  for(let i=0;i<currentQuestions.length;i++){
+    const q = currentQuestions[i];
+    if(!q || !q._correctKey) continue;
+    const sel = form.querySelector(`input[name=q${i}]:checked`);
+    if(sel && sel.value === q._correctKey) s++;
+  }
+  document.getElementById('result').textContent = `Bạn làm đúng ${s} trên ${currentQuestions.length} câu.`;
+  renderErrors();
 });
 </script>
-
 </body>
 </html>
