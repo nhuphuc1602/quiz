@@ -205,12 +205,13 @@ function gradeQuiz(questions) {
     const selected = form.querySelector(`input[name=q${idx}]:checked`);
     const qDiv = form.children[idx];
     
-    // Reset trạng thái trước khi highlight
+    // Reset trạng thái trước khi highlight, đồng thời xóa đáp án đúng nếu có
     qDiv.style.backgroundColor = 'white';
     qDiv.style.borderColor = 'transparent';
-    // Xóa icon cũ nếu có
     const oldIcon = qDiv.querySelector('.result-icon');
     if (oldIcon) oldIcon.remove();
+    const oldAnswer = qDiv.querySelector('.correct-answer');
+    if (oldAnswer) oldAnswer.remove();
 
     if (selected && selected.value === correctKey) {
       score++;
@@ -229,10 +230,23 @@ function gradeQuiz(questions) {
       icon.style.color = '#dc3545';
       icon.textContent = '✘';
       qDiv.querySelector('p').appendChild(icon);
+
+      // Thêm dòng đáp án đúng
+      const answerDiv = document.createElement('div');
+      answerDiv.className = 'correct-answer';
+      answerDiv.style.marginTop = '8px';
+      answerDiv.style.fontSize = '0.95rem';
+      answerDiv.style.color = '#155724';
+      answerDiv.style.backgroundColor = '#d1ecf1';
+      answerDiv.style.padding = '6px 12px';
+      answerDiv.style.borderRadius = '8px';
+      answerDiv.textContent = `Đáp án đúng: (${correctKey}) ${q.options[correctKey].replace(/\*\*/g, '').trim()}`;
+      qDiv.appendChild(answerDiv);
     }
   });
   return score;
 }
+
 
 function showResult(score, total) {
   const resultDiv = document.getElementById('result');
